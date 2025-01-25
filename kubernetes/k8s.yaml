@@ -50,6 +50,13 @@ spec:
       containers:
       - name: frontend
         image: alexandrebo/frontend:1.0
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
         ports:
         - containerPort: 3000
         envFrom:
@@ -80,6 +87,13 @@ spec:
       containers:
       - name: backend
         image: alexandrebo/backend:1.0
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
         ports:
         - containerPort: 8706
         envFrom:
@@ -108,6 +122,13 @@ spec:
       containers:
       - name: mongo
         image: mongo:6.0.20
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
         ports:
         - containerPort: 27017
         env:
@@ -141,6 +162,13 @@ spec:
       containers:
       - name: redis
         image: redis:8.0-M03-alpine3.21
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
         ports:
         - containerPort: 6379
         env:
