@@ -17,3 +17,7 @@ output "region" {
   description = "AWS region"
   value       = var.aws_region
 }
+
+output "volume_id" {
+  value = aws_ebs_volume.alex_database_pv.id
+}
