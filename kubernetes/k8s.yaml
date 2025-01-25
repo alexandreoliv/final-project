@@ -103,6 +103,8 @@ spec:
       labels:
         app: mongo
     spec:
+      nodeSelector:  # Otherwise, it might be scheduled in a different availability zone than that of the volume
+        topology.kubernetes.io/zone: us-west-2a
       containers:
       - name: mongo
         image: mongo:6.0.20
