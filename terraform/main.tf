@@ -1,3 +1,12 @@
+terraform {
+  backend "s3" {
+    bucket         = "alex-project3-state-bucket"
+    key            = "terraform.tfstate"
+    region         = "us-west-2"
+    dynamodb_table = "project3-terraform-lock-table"
+  }
+}
+
 provider "aws" {
   region = var.aws_region
 }
