@@ -66,9 +66,9 @@ module "eks" {
 
       instance_types = ["t3.medium"]
 
-      min_size     = 2
-      max_size     = 5
-      desired_size = 3
+      min_size     = 3
+      max_size     = 6
+      desired_size = 4
     }
   }
 }
@@ -124,7 +124,7 @@ resource "aws_cloudwatch_metric_alarm" "high_memory_utilization" {
   evaluation_periods  = 2
   metric_name         = "MemoryUtilization"
   namespace           = "CWAgent"
-  period              = 300                 # 5 minutes
+  period              = 300 # 5 minutes
   statistic           = "Average"
   threshold           = 75.0 # Trigger at 75% memory utilization
   alarm_actions       = [aws_autoscaling_policy.memory_based_scaling.arn]
@@ -141,7 +141,7 @@ resource "aws_cloudwatch_metric_alarm" "low_memory_utilization" {
   evaluation_periods  = 2
   metric_name         = "MemoryUtilization"
   namespace           = "CWAgent"
-  period              = 300                 # 5 minutes
+  period              = 300 # 5 minutes
   statistic           = "Average"
   threshold           = 75.0 # Trigger at 75% memory utilization
   alarm_actions       = [aws_autoscaling_policy.memory_based_scaling.arn]
