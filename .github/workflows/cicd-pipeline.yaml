@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'expensy_frontend/**'
-      - 'expensy_backend**'
+      - 'expensy_backend/**'
       - 'kubernetes/**'
       - '.github/workflows/**'
   pull_request:
@@ -14,7 +14,7 @@ on:
       - main
     paths:
       - 'expensy_frontend/**'
-      - 'expensy_backend**'
+      - 'expensy_backend/**'
       - 'kubernetes/**'
       - '.github/workflows/**'
 
@@ -24,8 +24,8 @@ jobs:
     runs-on: ubuntu-24.04
     
     outputs:
-      ui: ${{ steps.filter.outputs.frontend }}
-      api: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
 
     steps:
     - name: Checkout repository
@@ -39,7 +39,7 @@ jobs:
           frontend:
             - 'expensy_frontend/**'
           backend:
-            - 'expensy_backend**'
+            - 'expensy_backend/**'
           kubernetes:
             - 'kubernetes/**'
           github_workflows:
