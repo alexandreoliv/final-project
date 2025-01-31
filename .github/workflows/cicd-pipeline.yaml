@@ -9,6 +9,7 @@ on:
       - 'expensy_backend/**'
       - 'kubernetes/**'
       - '.github/workflows/**'
+      - 'terraform/**'
   pull_request:
     branches:
       - main
@@ -17,6 +18,7 @@ on:
       - 'expensy_backend/**'
       - 'kubernetes/**'
       - '.github/workflows/**'
+      - 'terraform/**'
 
 jobs:
   # Continuous Integration job
@@ -42,9 +44,11 @@ jobs:
             - 'expensy_backend/**'
           kubernetes:
             - 'kubernetes/**'
+          terraform:
+            - 'terraform/**'
           github_workflows:
             - '.github/workflows/**'
-
+          
     - name: Print Changed Directories
       run: |
         if [ "${{ steps.filter.outputs.frontend }}" == "true" ]; then
@@ -55,6 +59,9 @@ jobs:
         fi
         if [ "${{ steps.filter.outputs.kubernetes }}" == "true" ]; then
           echo "The 'kubernetes' directory was changed."
+        fi
+        if [ "${{ steps.filter.outputs.terraform }}" == "true" ]; then
+          echo "The 'terraform' directory was changed."
         fi
         if [ "${{ steps.filter.outputs.github_workflows }}" == "true" ]; then
           echo "The '.github/workflows' directory was changed."
@@ -87,9 +94,40 @@ jobs:
         docker build -f expensy_backend/Dockerfile -t alexandrebo/final-project-backend:${{ github.sha }} ./expensy_backend
         docker push alexandrebo/final-project-backend:${{ github.sha }}
 
+  # Terraform Infrastructure Creation
+  terraform:
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v3.1.2
+      with:
+        terraform_version: 1.10.5
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    # Terraform configuration for EKS cluster, EBS volume, AWS Load Balancer etc
+    - name: Terraform Init
+      run: |
+        cd terraform
+        terraform init
+
+    - name: Terraform Apply
+      run: |
+        cd terraform
+        terraform apply -auto-approve
+
   # Continuous Delivery job
   deploy:
-    needs: build
+    needs: [build, terraform]
     runs-on: ubuntu-24.04
 
     steps:
