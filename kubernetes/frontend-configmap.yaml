@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: project3
+data:
+  NEXT_PUBLIC_API_URL: "http://k8s-project3-ingress-c8229e39ca-1142885658.eu-central-1.elb.amazonaws.com"
