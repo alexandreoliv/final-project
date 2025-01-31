@@ -72,3 +72,81 @@ module "eks" {
     }
   }
 }
+
+# Get the Auto Scaling Group name for the EKS node group
+data "aws_autoscaling_groups" "eks_node_groups" {
+  filter {
+    name   = "tag:eks:nodegroup-name"
+    values = ["alex-node-group-1-20250130220340297600000004"]
+  }
+}
+
+# Define a CPU-based scaling policy
+resource "aws_autoscaling_policy" "cpu_based_scaling" {
+  name                   = "cpu-based-scaling"
+  autoscaling_group_name = data.aws_autoscaling_groups.eks_node_groups.names[0]
+  policy_type            = "TargetTrackingScaling"
+
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+    target_value = 50.0
+  }
+}
+
+# Define a memory-based scaling policy using step scaling
+resource "aws_autoscaling_policy" "memory_based_scaling" {
+  name                   = "memory-based-scaling"
+  autoscaling_group_name = data.aws_autoscaling_groups.eks_node_groups.names[0]
+  policy_type            = "StepScaling"
+  adjustment_type        = "ChangeInCapacity"
+
+  step_adjustment {
+    scaling_adjustment          = 1 # Add 1 instance
+    metric_interval_lower_bound = 0 # Trigger when memory utilization is above 75%
+  }
+
+  step_adjustment {
+    scaling_adjustment          = -1 # Remove 1 instance
+    metric_interval_upper_bound = 0  # Trigger when memory utilization is below 75%
+  }
+
+  # CloudWatch alarm for high memory utilization
+  metric_aggregation_type   = "Average"
+  estimated_instance_warmup = 300 # Warm-up time for new instances (in seconds)
+}
+
+# Create a CloudWatch alarm for high memory utilization
+resource "aws_cloudwatch_metric_alarm" "high_memory_utilization" {
+  alarm_name          = "high-memory-utilization"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 2
+  metric_name         = "MemoryUtilization"
+  namespace           = "CWAgent"
+  period              = 300                 # 5 minutes
+  statistic           = "Average"
+  threshold           = 75.0 # Trigger at 75% memory utilization
+  alarm_actions       = [aws_autoscaling_policy.memory_based_scaling.arn]
+
+  dimensions = {
+    AutoScalingGroupName = data.aws_autoscaling_groups.eks_node_groups.names[0]
+  }
+}
+
+# Create a CloudWatch alarm for low memory utilization
+resource "aws_cloudwatch_metric_alarm" "low_memory_utilization" {
+  alarm_name          = "low-memory-utilization"
+  comparison_operator = "LessThanOrEqualToThreshold"
+  evaluation_periods  = 2
+  metric_name         = "MemoryUtilization"
+  namespace           = "CWAgent"
+  period              = 300                 # 5 minutes
+  statistic           = "Average"
+  threshold           = 75.0 # Trigger at 75% memory utilization
+  alarm_actions       = [aws_autoscaling_policy.memory_based_scaling.arn]
+
+  dimensions = {
+    AutoScalingGroupName = data.aws_autoscaling_groups.eks_node_groups.names[0]
+  }
+}
