@@ -12,5 +12,3 @@ app.use('/api', expenseRoutes);
 connectDB();
 
 export default app;
-
-// comment just to trigger the CI/CD pipeline

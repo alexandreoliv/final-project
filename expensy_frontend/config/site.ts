@@ -14,5 +14,3 @@ export const siteConfig = {
     home: "/home",
   },
 }
-
-// comment just to trigger the CI/CD pipeline
