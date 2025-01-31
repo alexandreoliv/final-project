@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: alexandrebo/final-project-frontend:1.0
+        image: alexandrebo/final-project-frontend:304fc0159ebd2414d75ca9f2779d67ef83df163b
         resources:
           requests:
             memory: "500Mi"

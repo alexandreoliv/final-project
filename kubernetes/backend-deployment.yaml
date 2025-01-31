@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: alexandrebo/final-project-backend:1.0
+        image: alexandrebo/final-project-backend:304fc0159ebd2414d75ca9f2779d67ef83df163b
         resources:
           requests:
             memory: "500Mi"
